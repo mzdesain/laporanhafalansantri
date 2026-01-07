@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="id" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Hafalan Santri - Mabash</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .nav-btn-active { background-color: #1f2937 !important; color: white !important; }
+        .rapor-container { border: 2px solid #1f2937; background: white; max-width: 850px; margin: auto; }
+        .rapor-header { border-bottom: 2px solid #1f2937; text-align: center; padding-bottom: 1rem; margin-bottom: 1.5rem; }
+        .scrollable-nav { scrollbar-width: none; -ms-overflow-style: none; }
+        .scrollable-nav::-webkit-scrollbar { display: none; }
+        
+        /* Warna Kartu Kelas Variatif dengan Border Kiri Tebal */
+        .card-vii { border-left: 8px solid #3b82f6; }
+        .card-viii { border-left: 8px solid #10b981; }
+        .card-ix { border-left: 8px solid #f59e0b; }
+        .card-x { border-left: 8px solid #8b5cf6; }
+        .card-xi { border-left: 8px solid #ef4444; }
+        .card-xii { border-left: 8px solid #06b6d4; }
+
+        @media print { .no-print { display: none; } body { background: white; } .rapor-container { border: none; box-shadow: none; padding: 0; } }
+    </style>
+</head>
+<body class="h-full flex flex-col">
+    <div id="app" class="min-h-full flex flex-col flex-1">
+        
+        <nav class="bg-white sticky top-0 z-50 border-b-2 no-print">
+            <div class="px-4 py-3">
+                <div class="flex items-center space-x-3 mb-3">
+                    <img src="https://ypwi.or.id/assets/setting/front/meta/image.png" class="w-12 h-12 object-contain">
+                    <div>
+                        <h1 class="text-sm md:text-lg font-bold text-gray-800 uppercase tracking-tight">Sistem Monitoring Hafalan</h1>
+                        <p class="text-xs text-gray-600 uppercase">Ma'had Abu Bakar Ash-Shiddiq Anabanua</p>
+                    </div>
+                </div>
+                <div class="scrollable-nav overflow-x-auto">
+                    <div class="flex space-x-2 pb-1" style="min-width: max-content;">
+                        <button onclick="window.showPage('dashboard')" id="nav-dashboard" class="nav-btn-active px-4 py-2 rounded-md text-sm font-medium transition bg-gray-200">Dashboard</button>
+                        <button onclick="window.showPage('kelas')" id="nav-kelas" class="px-4 py-2 rounded-md text-sm font-medium transition bg-gray-200 text-gray-700 hover:bg-gray-300">Menu Kelas</button>
+                        <button onclick="window.showPage('tentang')" id="nav-tentang" class="px-4 py-2 rounded-md text-sm font-medium transition bg-gray-200 text-gray-700 hover:bg-gray-300">Tentang</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <main class="p-4 md:p-6 flex-1">
+            <section id="page-dashboard" class="page-content">
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-6">
+                    <h2 class="text-xl md:text-2xl font-bold text-gray-800 mb-2">Assalamu'alaikum, Ayah Bunda!</h2>
+                    <p class="text-gray-600 leading-relaxed text-sm md:text-base text-justify">
+                        Selamat datang di portal informasi perkembangan hafalan ananda tercinta. Kami mendoakan semoga setiap ayat yang dihafal ananda menjadi cahaya dan mahkota kemuliaan bagi Ayah dan Bunda di akhirat kelak. Teruslah berikan dukungan terbaik dan doa yang tulus, karena ridho serta semangat dari orang tua adalah kunci utama keberhasilan ananda menjadi seorang Hafizh Al-Qur'an.
+                        <br><br>
+                        <span class="italic text-emerald-600 font-medium">"Sebaik-baik kalian adalah orang yang belajar Al-Qur'an dan mengajarkannya." (HR. Bukhari)</span>
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-gradient-to-br from-blue-500 to-blue-600 text-white p-6 rounded-xl shadow-lg transform hover:scale-105 transition">
+                        <div class="flex items-center justify-between">
+                            <div><p class="text-blue-100 text-[10px] mb-1 uppercase font-bold">Total Santri</p><h3 id="stat-santri" class="text-3xl font-bold">0</h3></div>
+                            <div class="bg-white/20 rounded-full p-4"><i class="fas fa-user-graduate text-2xl"></i></div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-green-500 to-green-600 text-white p-6 rounded-xl shadow-lg transform hover:scale-105 transition">
+                        <div class="flex items-center justify-between">
+                            <div><p class="text-green-100 text-[10px] mb-1 uppercase font-bold">Program Utama</p><h3 class="text-xl font-bold">Tahfidz & Hadits</h3></div>
+                            <div class="bg-white/20 rounded-full p-4"><i class="fas fa-book-quran text-2xl"></i></div>
+                        </div>
+                    </div>
+                    <div class="bg-gradient-to-br from-purple-500 to-purple-600 text-white p-6 rounded-xl shadow-lg transform hover:scale-105 transition">
+                        <div class="flex items-center justify-between">
+                            <div><p class="text-purple-100 text-[10px] mb-1 uppercase font-bold text-[10px]">Status Capaian</p><h3 class="text-3xl font-bold">Mumtaz</h3></div>
+                            <div class="bg-white/20 rounded-full p-4"><i class="fas fa-award text-2xl"></i></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="page-kelas" class="page-content hidden">
+                <div id="view-kelas-grid">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Pilih Jenjang Kelas</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="kelas-grid-container"></div>
+                </div>
+
+                <div id="view-santri-list" class="hidden">
+                    <div class="flex flex-col md:flex-row justify-between mb-4 gap-4">
+                        <button onclick="window.backToKelas()" class="text-gray-800 font-bold hover:text-black transition"><i class="fas fa-arrow-left mr-2"></i> Kembali</button>
+                        <div class="relative">
+                            <input type="text" id="search-input" onkeyup="window.searchSantri()" placeholder="Cari nama santri..." class="w-full md:w-64 pl-10 pr-4 py-2 border rounded-lg outline-none focus:ring-2 focus:ring-gray-800 shadow-sm bg-white">
+                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg border shadow-sm overflow-hidden">
+                        <table class="w-full text-left">
+                            <thead class="bg-gray-50 uppercase text-[10px] font-bold text-gray-600 border-b">
+                                <tr><th class="p-4 tracking-wider">Nama Santri</th><th class="p-4 text-right tracking-wider">Aksi</th></tr>
+                            </thead>
+                            <tbody id="santri-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <section id="page-pilihan-laporan" class="page-content hidden">
+                <button onclick="window.showPage('kelas')" class="mb-6 font-bold text-gray-600 no-print"><i class="fas fa-arrow-left"></i> Kembali ke Daftar</button>
+                <div class="text-center mb-10">
+                    <h2 id="choice-nama" class="text-2xl font-bold text-gray-800 uppercase tracking-tight"></h2>
+                    <p id="choice-info" class="text-gray-500 text-xs uppercase tracking-widest mt-1"></p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                    <div onclick="window.generateRapor('pekanan')" class="bg-white border-2 border-gray-100 p-8 rounded-2xl shadow-sm hover:border-blue-500 cursor-pointer transition text-center group">
+                        <div class="w-16 h-16 bg-blue-50 text-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-blue-500 group-hover:text-white transition"><i class="fas fa-calendar-week text-2xl"></i></div>
+                        <h4 class="font-bold text-gray-800 uppercase text-xs">Laporan Pekanan</h4>
+                    </div>
+                    <div onclick="window.generateRapor('bulanan')" class="bg-white border-2 border-gray-100 p-8 rounded-2xl shadow-sm hover:border-green-500 cursor-pointer transition text-center group">
+                        <div class="w-16 h-16 bg-green-50 text-green-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-green-500 group-hover:text-white transition"><i class="fas fa-calendar-alt text-2xl"></i></div>
+                        <h4 class="font-bold text-gray-800 uppercase text-xs">Laporan Bulanan</h4>
+                    </div>
+                    <div onclick="window.generateRapor('semester')" class="bg-white border-2 border-gray-100 p-8 rounded-2xl shadow-sm hover:border-purple-500 cursor-pointer transition text-center group">
+                        <div class="w-16 h-16 bg-purple-50 text-purple-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-purple-500 group-hover:text-white transition"><i class="fas fa-graduation-cap text-2xl"></i></div>
+                        <h4 class="font-bold text-gray-800 uppercase text-xs">Rapor Semester</h4>
+                    </div>
+                </div>
+            </section>
+
+            <section id="page-rapor-detail" class="page-content hidden">
+                <div class="no-print mb-6 max-w-4xl mx-auto">
+                    <button onclick="window.showPage('pilihan-laporan')" class="font-bold text-gray-600 hover:text-black transition"><i class="fas fa-arrow-left"></i> Kembali</button>
+                </div>
+
+                <div class="rapor-container p-8 md:p-12 shadow-xl">
+                    <div class="rapor-header">
+                        <h2 id="r-title" class="text-xl font-bold uppercase tracking-widest text-gray-800">LAPORAN HASIL PENCAPAIAN HAFALAN</h2>
+                        <h3 class="text-md font-semibold mt-1">Ma'had Abu Bakar Ash-Shiddiq Anabanua</h3>
+                        <p id="r-subtitle" class="text-xs text-gray-600 mt-2 font-medium italic"></p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-2 text-[11px] mb-8">
+                        <div class="space-y-1">
+                            <p class="flex justify-between border-b pb-1 uppercase font-semibold text-gray-500">Nama Santri <span id="r-nama" class="text-gray-900 font-bold uppercase"></span></p>
+                            <p class="flex justify-between border-b pb-1 uppercase font-semibold text-gray-500">NIS <span id="r-nis" class="text-gray-900"></span></p>
+                            <p class="flex justify-between border-b pb-1 uppercase font-semibold text-gray-500">Kelas <span id="r-kelas" class="text-gray-900 uppercase font-bold"></span></p>
+                        </div>
+                        <div class="space-y-1 md:text-right text-[11px]">
+                            <p class="flex justify-between border-b pb-1 uppercase font-semibold text-gray-500">Pembimbing <span id="r-pembimbing" class="text-gray-900 italic font-bold"></span></p>
+                            <p class="flex justify-between border-b pb-1 uppercase font-semibold text-gray-500">Halaqah <span id="r-halaqah" class="text-gray-900 italic font-bold uppercase"></span></p>
+                            <p class="flex justify-between border-b pb-1 uppercase font-semibold text-gray-500">Nama Wali <span id="r-wali" class="text-gray-900"></span></p>
+                        </div>
+                    </div>
+
+                    <div class="border-2 border-gray-800 p-5 mb-8 bg-gray-50 rounded">
+                        <h4 id="r-progress-label" class="font-black text-center border-b-2 border-gray-800 pb-2 mb-4 uppercase text-[11px] tracking-widest text-gray-800 italic">Progress Hafalan Al-Qur'an & Hadits</h4>
+                        <div class="grid grid-cols-2 gap-4 text-center">
+                            <div class="border-r-2 border-gray-200 py-1">
+                                <p id="r-awal-label" class="text-[9px] uppercase font-black text-gray-400 mb-2"></p>
+                                <p id="r-awal" class="text-[11px] font-bold text-gray-800 leading-relaxed uppercase"></p>
+                            </div>
+                            <div class="py-1">
+                                <p class="text-[9px] uppercase font-black text-gray-400 mb-2 uppercase">Total Capaian Sekarang</p>
+                                <p id="r-sekarang" class="text-[11px] font-bold text-emerald-700 leading-relaxed uppercase"></p>
+                            </div>
+                        </div>
+                        <p id="r-tambahan" class="mt-4 text-center text-[10px] font-black text-gray-800 italic bg-white border border-dashed border-gray-400 py-2 rounded uppercase tracking-tighter"></p>
+                    </div>
+
+                    <table class="w-full border-collapse border-2 border-gray-800 text-[11px] mb-8">
+                        <thead class="bg-gray-100" id="r-table-head"></thead>
+                        <tbody id="r-table-body" class="text-center font-medium"></tbody>
+                    </table>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+                        <div class="border-2 border-gray-800 p-4 rounded bg-white">
+                            <p class="text-[10px] font-black uppercase mb-2 text-gray-500 tracking-tighter uppercase font-bold">Catatan Pembimbing:</p>
+                            <p id="r-catatan" class="text-[10px] text-justify italic leading-relaxed text-gray-800"></p>
+                        </div>
+                        <div class="border-2 border-gray-800 p-4 rounded bg-white">
+                            <p id="abs-label" class="text-[10px] font-black uppercase mb-3 text-center text-gray-500 tracking-tighter uppercase font-bold text-center"></p>
+                            <div class="grid grid-cols-4 gap-2 text-center text-[10px]">
+                                <div class="bg-gray-50 p-2 border border-gray-200 rounded font-bold text-gray-700">Hadir (H)<br><b id="abs-h" class="text-sm">0</b></div>
+                                <div class="p-2 border border-gray-200 rounded text-gray-400">Izin (I)<br><b id="abs-i" class="text-sm">0</b></div>
+                                <div class="p-2 border border-gray-200 rounded text-gray-400 font-bold text-center">Sakit (S)<br><b id="abs-s" class="text-sm">0</b></div>
+                                <div class="p-2 border border-gray-200 rounded text-red-500 font-bold text-center">Alpa (A)<br><b id="abs-a" class="text-sm">0</b></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-8 text-[10px] text-center mt-24">
+                        <div class="space-y-16"><p class="uppercase font-bold">Kepala Ma'had</p><p class="font-bold underline uppercase">Marhali Abd. Rahman, M.Pd.</p></div>
+                        <div class="space-y-16"><p class="uppercase font-bold">Pembimbing</p><p id="sig-pembimbing" class="font-bold underline uppercase"></p></div>
+                        <div class="space-y-16"><p class="uppercase font-bold tracking-tight">Anabanua, <span id="r-tgl-cetak"></span><br>Orang Tua/Wali</p><p id="sig-wali" class="font-bold underline uppercase"></p></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="page-tentang" class="page-content hidden">
+                <div class="bg-white p-6 md:p-10 rounded-2xl border border-gray-200 shadow-sm max-w-4xl mx-auto">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                        <i class="fas fa-info-circle mr-3 text-indigo-600"></i> Tentang Aplikasi
+                    </h3>
+                    <p class="text-gray-700 leading-relaxed mb-8 border-l-4 border-indigo-500 pl-4">
+                        Sistem Monitoring Hafalan Santri Ma'had Abu Bakar Ash-Shiddiq Anabanua dikembangkan dengan visi utama untuk menciptakan sinergi yang transparan antara pihak pondok, pembimbing, dan orang tua santri. 
+                    </p>
+                    
+                    <div class="space-y-4">
+                        <div class="flex items-start bg-gray-50 p-4 rounded-xl border border-gray-100 transition-hover hover:bg-white hover:shadow-md">
+                            <div class="bg-indigo-100 text-indigo-600 rounded-lg p-2 mr-4 mt-1"><i class="fas fa-bolt text-xs"></i></div>
+                            <p class="text-sm text-gray-700 leading-relaxed">Memberikan akses informasi secara real-time kepada Ayah dan Bunda mengenai progres hafalan Al-Qur'an dan Hadits ananda.</p>
+                        </div>
+                        <div class="flex items-start bg-gray-50 p-4 rounded-xl border border-gray-100 transition-hover hover:bg-white hover:shadow-md">
+                            <div class="bg-emerald-100 text-emerald-600 rounded-lg p-2 mr-4 mt-1"><i class="fas fa-file-invoice text-xs"></i></div>
+                            <p class="text-sm text-gray-700 leading-relaxed">Memudahkan evaluasi belajar santri melalui laporan yang terstruktur, baik mingguan, bulanan, maupun laporan semester.</p>
+                        </div>
+                        <div class="flex items-start bg-gray-50 p-4 rounded-xl border border-gray-100 transition-hover hover:bg-white hover:shadow-md">
+                            <div class="bg-orange-100 text-orange-600 rounded-lg p-2 mr-4 mt-1"><i class="fas fa-user-check text-xs"></i></div>
+                            <p class="text-sm text-gray-700 leading-relaxed">Meningkatkan kedisiplinan dan motivasi santri melalui pencatatan absensi serta mutaba'ah yaumiyah yang terintegrasi.</p>
+                        </div>
+                        <div class="flex items-start bg-gray-50 p-4 rounded-xl border border-gray-100 transition-hover hover:bg-white hover:shadow-md">
+                            <div class="bg-blue-100 text-blue-600 rounded-lg p-2 mr-4 mt-1"><i class="fas fa-comments text-xs"></i></div>
+                            <p class="text-sm text-gray-700 leading-relaxed">Membangun komunikasi yang lebih efektif dan efisien dalam memantau tumbuh kembang spiritual dan hafalan santri.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-gray-600 py-8 no-print mt-auto">
+            <div class="container mx-auto px-4 text-center">
+                <p class="text-sm">&copy; <span id="current-year"></span> Sistem Monitoring Hafalan Santri</p>
+                <p class="text-xs mt-2 text-gray-400 tracking-wider">Created by <span class="font-bold text-gray-800">Muzanni</span></p>
+            </div>
+        </footer>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore, collection, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAxoe-Bg6WUn59KjzaunvkCRVUbi1X95PQ",
+            authDomain: "tahfidzmabash.firebaseapp.com",
+            projectId: "tahfidzmabash",
+            storageBucket: "tahfidzmabash.firebasestorage.app",
+            appId: "1:113529956394:web:d6c9eedda4014fae937b53"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        // Memasukkan fungsi ke window agar dapat dipanggil di atribut HTML onclick
+        window.db = db;
+        window.getDocs = getDocs;
+        window.collection = collection;
+
+        window.santriData = [];
+        window.selectedSantri = null;
+        window.currentKelas = "";
+
+        const init = async () => {
+            try {
+                const snap = await getDocs(collection(db, 'santri'));
+                window.santriData = snap.docs.map(doc => ({id: doc.id, ...doc.data()}));
+                document.getElementById('stat-santri').innerText = window.santriData.length;
+                window.renderKelasCards();
+            } catch (error) { console.error("Firebase Error:", error); }
+        };
+
+        window.onload = init;
+        document.getElementById('current-year').innerText = new Date().getFullYear();
+
+        // LOGIKA NAVIGASI & UI
+        window.showPage = function(id) {
+            document.querySelectorAll('.page-content').forEach(p => p.classList.add('hidden'));
+            document.getElementById(`page-${id}`).classList.remove('hidden');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('nav-btn-active'));
+            const activeNav = document.getElementById(`nav-${id}`);
+            if(activeNav) activeNav.classList.add('nav-btn-active');
+        };
+
+        const kelasConfig = [
+            { k: 'VII', color: 'card-vii' }, { k: 'VIII', color: 'card-viii' },
+            { k: 'IX', color: 'card-ix' }, { k: 'X', color: 'card-x' },
+            { k: 'XI', color: 'card-xi' }, { k: 'XII', color: 'card-xii' }
+        ];
+
+        window.renderKelasCards = function() {
+            const container = document.getElementById('kelas-grid-container');
+            container.innerHTML = '';
+            kelasConfig.forEach(item => {
+                const card = document.createElement('div');
+                card.className = `bg-white p-6 rounded-xl text-left cursor-pointer hover:shadow-xl transition-all shadow-sm flex items-center justify-between group ${item.color}`;
+                card.innerHTML = `
+                    <div>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Jenjang</p>
+                        <p class="text-2xl font-black text-gray-800">KELAS ${item.k}</p>
+                    </div>
+                    <div class="flex items-center text-indigo-600 font-bold text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                        LIHAT SANTRI <i class="fas fa-arrow-right ml-2"></i>
+                    </div>
+                `;
+                card.onclick = () => window.showSantriList(item.k);
+                container.appendChild(card);
+            });
+        };
+
+        window.showSantriList = function(kelas) {
+            window.currentKelas = kelas;
+            const filtered = window.santriData.filter(s => String(s.kelas).toUpperCase().includes(kelas.toUpperCase()));
+            window.renderTable(filtered);
+            document.getElementById('view-kelas-grid').classList.add('hidden');
+            document.getElementById('view-santri-list').classList.remove('hidden');
+        };
+
+        window.backToKelas = function() {
+            document.getElementById('view-kelas-grid').classList.remove('hidden');
+            document.getElementById('view-santri-list').classList.add('hidden');
+        };
+
+        window.renderTable = function(data) {
+            const tbody = document.getElementById('santri-table-body');
+            tbody.innerHTML = data.length ? data.map(s => `
+                <tr class="border-t hover:bg-gray-50 transition">
+                    <td class="p-4 font-bold text-gray-800 uppercase text-xs">${s.nama_santri} <span class="block text-[10px] text-gray-400 font-normal tracking-tighter uppercase">NIS: ${s.nis}</span></td>
+                    <td class="p-4 text-right"><button onclick="window.bukaOpsiRapor('${s.id}')" class="bg-gray-800 text-white px-5 py-2 rounded-lg text-[10px] font-bold hover:bg-black transition tracking-wider">BUKA RAPOR</button></td>
+                </tr>
+            `).join('') : '<tr><td colspan="2" class="p-8 text-center text-gray-400">Belum ada data santri di kelas ini</td></tr>';
+        };
+
+        window.searchSantri = function() {
+            const q = document.getElementById('search-input').value.toLowerCase();
+            const filtered = window.santriData.filter(s => String(s.kelas).toUpperCase().includes(window.currentKelas) && s.nama_santri.toLowerCase().includes(q));
+            window.renderTable(filtered);
+        };
+
+        window.bukaOpsiRapor = function(id) {
+            window.selectedSantri = window.santriData.find(s => s.id === id);
+            document.getElementById('choice-nama').innerText = window.selectedSantri.nama_santri;
+            document.getElementById('choice-info').innerText = `Kelas ${window.selectedSantri.kelas} | NIS: ${window.selectedSantri.nis}`;
+            window.showPage('pilihan-laporan');
+        };
+
+        window.generateRapor = async function(type) {
+            const s = window.selectedSantri;
+            const pmb = "Andi Muhammad Ihsan Yusuf, S.H., M.Ag.";
+            const hlq = "Zaid bin Tsabit";
+            const wali = s.nama_wali || "Muhammad Fulan, S.Pd.I.";
+
+            document.getElementById('r-nama').innerText = s.nama_santri;
+            document.getElementById('r-nis').innerText = s.nis;
+            document.getElementById('r-kelas').innerText = `${s.kelas} / ${hlq}`;
+            document.getElementById('r-pembimbing').innerText = pmb;
+            document.getElementById('r-halaqah').innerText = hlq;
+            document.getElementById('r-wali').innerText = wali;
+            document.getElementById('sig-pembimbing').innerText = pmb;
+            document.getElementById('sig-wali').innerText = wali;
+            document.getElementById('r-tgl-cetak').innerText = new Date().toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'});
+
+            let tambahanHalaman = 0; let tambahanHadits = 0;
+            let absensi = { H: 0, I: 0, S: 0, A: 0 };
+            
+            try {
+                const hSnap = await window.getDocs(window.collection(window.db, 'hafalan_baru'));
+                hSnap.forEach((doc) => { if (doc.data().id_santri === s.id) tambahanHalaman += parseInt(doc.data().jumlah_halaman || 0); });
+                const hdSnap = await window.getDocs(window.collection(window.db, 'hadits'));
+                hdSnap.forEach((doc) => { if (doc.data().id_santri === s.id) tambahanHadits += parseInt(doc.data().jumlah_hadits || 0); });
+                const absSnap = await window.getDocs(window.collection(window.db, 'absensi'));
+                absSnap.forEach((doc) => {
+                    const d = doc.data();
+                    if (d.id_santri === s.id) {
+                        if (d.status === 'H') absensi.H++; else if (d.status === 'I') absensi.I++; else if (d.status === 'S') absensi.S++; else if (d.status === 'A') absensi.A++;
+                    }
+                });
+            } catch (err) { console.error(err); }
+
+            document.getElementById('abs-h').innerText = absensi.H;
+            document.getElementById('abs-i').innerText = absensi.I;
+            document.getElementById('abs-s').innerText = absensi.S;
+            document.getElementById('abs-a').innerText = absensi.A;
+
+            const juzSek = parseInt(s.total_hafalan_juz || 0);
+            const halSek = parseInt(s.total_hafalan_halaman || 0);
+            const hdSek = parseInt(s.total_hadits || 0);
+
+            let murniSek = (juzSek * 20) + halSek;
+            let murniAwl = murniSek - tambahanHalaman;
+            let juzAwl = Math.floor(murniAwl / 20);
+            let halAwl = murniAwl % 20;
+            let hdAwl = hdSek - tambahanHadits;
+
+            document.getElementById('r-sekarang').innerHTML = `HAFALAN: ${juzSek} JUZ ${halSek} HAL<br>HADITS: ${hdSek} HADITS`;
+            document.getElementById('r-awal').innerHTML = `HAFALAN: ${juzAwl} JUZ ${halAwl} HAL<br>HADITS: ${hdAwl} HADITS`;
+
+            const title = document.getElementById('r-title');
+            const sub = document.getElementById('r-subtitle');
+            const head = document.getElementById('r-table-head');
+            const body = document.getElementById('r-table-body');
+
+            if(type === 'pekanan') {
+                title.innerText = "LAPORAN PEKANAN TAHFIDZ";
+                sub.innerText = "Periode: 1 Januari 2026 - 7 Januari 2026";
+                document.getElementById('r-awal-label').innerText = "Capaian Awal Pekan";
+                document.getElementById('r-tambahan').innerText = `TAMBAHAN PEKAN INI: ${tambahanHalaman} HALAMAN AL-QUR'AN, ${tambahanHadits} HADITS`;
+                document.getElementById('r-catatan').innerText = "Terus semangat menghafal Al-Qur'an dan tingkatkan muroja'ah hafalan lama agar tidak mudah lupa.";
+                document.getElementById('abs-label').innerText = "Rekap Absensi Pekanan";
+                head.innerHTML = `<tr><th class="border border-gray-800 p-2">No</th><th class="border border-gray-800 p-2 text-left">Kategori</th><th class="border border-gray-800 p-2">Detail</th><th class="border border-gray-800 p-2">A (%)</th><th class="border border-gray-800 p-2">B (%)</th><th class="border border-gray-800 p-2">C (%)</th><th class="border border-gray-800 p-2">D (%)</th></tr>`;
+                body.innerHTML = `<tr><td class="border border-gray-800 p-2 font-bold">1</td><td class="border border-gray-800 p-2 text-left uppercase">Hafalan Baru</td><td class="border border-gray-800 p-2">${tambahanHalaman} hal</td><td class="border border-gray-800 p-2">0</td><td class="border border-gray-800 p-2">0</td><td class="border border-gray-800 p-2">0</td><td class="border border-gray-800 p-2">0</td></tr>`;
+            } else if(type === 'bulanan') {
+                title.innerText = "LAPORAN BULANAN TAHFIDZ";
+                sub.innerText = "Bulan: Februari 2026";
+                document.getElementById('r-awal-label').innerText = "Capaian Awal Bulan";
+                document.getElementById('r-tambahan').innerText = `TAMBAHAN BULAN INI: ${tambahanHalaman} HALAMAN AL-QUR'AN, ${tambahanHadits} HADITS`;
+                document.getElementById('r-catatan').innerText = `Alhamdulillah, progres hafalan ${s.nama_santri} pada periode ini cukup baik. Terus pertahankan konsistensi dan kualitas bacaan sesuai makhraj.`;
+                document.getElementById('abs-label').innerText = "Rekap Absensi Bulanan";
+                head.innerHTML = `<tr><th class="border border-gray-800 p-2 w-10">No</th><th class="border border-gray-800 p-2 text-left">Kategori</th><th class="border border-gray-800 p-2">Detail</th><th class="border border-gray-800 p-2">Rata-rata Nilai</th></tr>`;
+                body.innerHTML = `<tr><td class="border border-gray-800 p-2 font-bold">1</td><td class="border border-gray-800 p-2 text-left uppercase font-bold">Hafalan Baru</td><td class="border border-gray-800 p-2 font-bold">${tambahanHalaman} hal</td><td class="border border-gray-800 p-2 font-bold">-</td></tr>`;
+            } else {
+                title.innerText = "RAPOR SEMESTER TAHFIDZ";
+                sub.innerText = "Semester 2 Tahun Ajaran 2025/2026";
+                document.getElementById('r-awal-label').innerText = "Capaian Awal Semester";
+                document.getElementById('r-tambahan').innerText = `TAMBAHAN SEMESTER INI: ${tambahanHalaman} HALAMAN AL-QUR'AN, ${tambahanHadits} HADITS`;
+                document.getElementById('r-catatan').innerText = `${s.nama_santri} menunjukkan prestasi yang baik pada semester ini dengan nilai rata-rata 3.00 (B - Jayyid Jiddan).`;
+                document.getElementById('abs-label').innerText = "Rekap Absensi Semester";
+                head.innerHTML = `<tr><th class="border border-gray-800 p-2 w-10 uppercase font-black">No</th><th class="border border-gray-800 p-2 text-left tracking-tight uppercase font-black">Komponen Penilaian</th><th class="border border-gray-800 p-2 uppercase font-black">Nilai Huruf</th><th class="border border-gray-800 p-2 text-left uppercase font-black">Keterangan</th></tr>`;
+                body.innerHTML = `
+                    <tr><td class="border border-gray-800 p-2 font-bold uppercase text-[9px]">1</td><td class="border border-gray-800 p-2 text-left uppercase font-bold text-gray-800">Murajaah</td><td class="border border-gray-800 p-2 font-black text-xs uppercase text-center">A</td><td class="border border-gray-800 p-2 text-left uppercase text-[9px] font-bold italic">MUMTAZ</td></tr>
+                    <tr class="bg-gray-100 font-black"><td colspan="2" class="border border-gray-800 p-2 text-right uppercase tracking-widest text-[9px]">Rata-rata</td><td class="border border-gray-800 p-2 text-xs uppercase text-center font-bold text-lg">B</td><td class="border border-gray-800 p-2 text-left italic uppercase text-[9px]">JAYYID JIDDAN (3.00)</td></tr>`;
+            }
+            window.showPage('rapor-detail');
+        };
+    </script>
+</body>
+</html>
