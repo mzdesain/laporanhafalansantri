@@ -540,10 +540,10 @@
 
         // LOGIKA PENILAIAN & CATATAN (SESUAI PERINTAH)
         const mapKeterangan = { 'A': 'Mumtaz', 'B': 'Jayyid Jiddan', 'C': 'Jayyid', 'D': 'Maqbul' };
+        const weights = { 'A': 4, 'B': 3, 'C': 2, 'D': 1 };
 
         function hitungRataRataAngka(listNilai) {
             if (!listNilai.length) return 0;
-            const weights = { 'A': 4, 'B': 3, 'C': 2, 'D': 1 };
             const sum = listNilai.reduce((acc, v) => acc + (weights[v] || 0), 0);
             return sum / listNilai.length;
         }
@@ -577,15 +577,24 @@
             document.getElementById('sig-wali').innerText = s.nama_wali || "---";
             document.getElementById('r-tgl-cetak').innerText = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 
-            let tQuran = 0, tHadits = 0, abs = { H: 0, I: 0, S: 0, A: 0 }, listN = [];
+            let tQuran = 0, tHadits = 0, abs = { H: 0, I: 0, S: 0, A: 0 };
+            
+            // DATA KOMPONEN YANG AKAN DITAMPILKAN (SESUAI GAMBAR)
+            // Nilai ini sebaiknya ditarik dari DB, namun jika statis kita harus masukkan ke array rata-rata
+            let komponenNilai = {
+                'quran': 'B',
+                'hadits': 'C',
+                'murajaah': 'A',
+                'tahsin': 'B',
+                'tasmi': 'B',
+                'mutabaah': 'A'
+            };
+
             try {
-                // Tarik data Hafalan
                 const hSnap = await window.getDocs(window.collection(window.db, 'hafalan_baru'));
-                hSnap.forEach(doc => { if (doc.data().id_santri === s.id) { tQuran += parseInt(doc.data().jumlah_halaman || 0); listN.push(doc.data().nilai); } });
-                // Tarik data Hadits
+                hSnap.forEach(doc => { if (doc.data().id_santri === s.id) { tQuran += parseInt(doc.data().jumlah_halaman || 0); } });
                 const hdSnap = await window.getDocs(window.collection(window.db, 'hadits'));
                 hdSnap.forEach(doc => { if (doc.data().id_santri === s.id) tHadits += parseInt(doc.data().jumlah_hadits || 0); });
-                // Tarik data Absensi
                 const aSnap = await window.getDocs(window.collection(window.db, 'absensi'));
                 aSnap.forEach(doc => {
                     const d = doc.data();
@@ -606,6 +615,8 @@
             document.getElementById('r-sekarang').innerHTML = `${jSek} Juz ${hSek} Hal <br> ${dSek} Hadits`;
             document.getElementById('r-awal').innerHTML = `${jAwl} Juz ${hAwl} Hal <br> ${dAwl} Hadits`;
 
+            // HITUNG RATA-RATA BERDASARKAN NILAI KOMPONEN DI TABEL
+            const listN = Object.values(komponenNilai);
             const rataA = hitungRataRataAngka(listN);
             const rataH = rataA >= 3.5 ? 'A' : rataA >= 2.5 ? 'B' : rataA >= 1.5 ? 'C' : 'D';
 
@@ -613,10 +624,7 @@
             const tahunAjaran = getTahunAjaran();
             const semester = getSemester();
 
-            document.getElementById('r-subtitle').innerText =
-                type === 'semester'
-                    ? `Semester ${semester} Tahun Ajaran ${tahunAjaran}`
-                    : "Periode Monitoring Hafalan";
+            document.getElementById('r-subtitle').innerText = type === 'semester' ? `Semester ${semester} Tahun Ajaran ${tahunAjaran}` : "Periode Monitoring Hafalan";
             document.getElementById('r-awal-label').innerText = type === 'pekanan' ? "Capaian Awal Pekan" : type === 'bulanan' ? "Capaian Awal Bulan" : "Capaian Awal Semester";
             document.getElementById('r-tambahan').innerText = `TAMBAHAN HAFALAN BARU: ${tQuran} HALAMAN QURAN & ${tHadits} HADITS`;
             document.getElementById('r-catatan').innerText = generateCatatan(type, { abs }, s.nama_santri, rataA);
@@ -624,14 +632,13 @@
             const head = document.getElementById('r-table-head'), body = document.getElementById('r-table-body');
             head.innerHTML = `<tr><th class="border border-slate-900 p-2 uppercase">Kategori Komponen</th><th class="border border-slate-900 p-2">Detail</th><th class="border border-slate-900 p-2">Nilai</th><th class="border border-slate-900 p-2 text-left">Keterangan</th></tr>`;
 
-            // KATEGORI YANG DIMINTA USER: Hafalan Baru, Hadits, Murajaah, Tahsin, Tasmi', Mutaba'ah
             body.innerHTML = `
-                <tr><td class="border border-slate-900 p-2 text-left uppercase">Hafalan Baru Al-Quran</td><td class="border border-slate-900 p-2">${tQuran} Hal</td><td class="border border-slate-900 p-2">B</td><td class="border border-slate-900 p-2 text-left italic">Jayyid Jiddan</td></tr>
-                <tr><td class="border border-slate-900 p-2 text-left uppercase">Hafalan Baru Hadits</td><td class="border border-slate-900 p-2">${tHadits} Hdts</td><td class="border border-slate-900 p-2">C</td><td class="border border-slate-900 p-2 text-left italic">Jayyid</td></tr>
-                <tr><td class="border border-slate-900 p-2 text-left uppercase">Murajaah Al-Quran</td><td class="border border-slate-900 p-2">-</td><td class="border border-slate-900 p-2">A</td><td class="border border-slate-900 p-2 text-left italic">Mumtaz</td></tr>
-                <tr><td class="border border-slate-900 p-2 text-left uppercase">Tahsin</td><td class="border border-slate-900 p-2">-</td><td class="border border-slate-900 p-2">B</td><td class="border border-slate-900 p-2 text-left italic">Jayyid Jiddan</td></tr>
-                <tr><td class="border border-slate-900 p-2 text-left uppercase">Tasmi'</td><td class="border border-slate-900 p-2">-</td><td class="border border-slate-900 p-2">B</td><td class="border border-slate-900 p-2 text-left italic">Jayyid Jiddan</td></tr>
-                <tr><td class="border border-slate-900 p-2 text-left uppercase">Mutaba'ah Yaumiyah</td><td class="border border-slate-900 p-2">-</td><td class="border border-slate-900 p-2">A</td><td class="border border-slate-900 p-2 text-left italic">Mumtaz</td></tr>
+                <tr><td class="border border-slate-900 p-2 text-left uppercase">Hafalan Baru Al-Quran</td><td class="border border-slate-900 p-2">${tQuran} Hal</td><td class="border border-slate-900 p-2">${komponenNilai.quran}</td><td class="border border-slate-900 p-2 text-left italic">${mapKeterangan[komponenNilai.quran]}</td></tr>
+                <tr><td class="border border-slate-900 p-2 text-left uppercase">Hafalan Baru Hadits</td><td class="border border-slate-900 p-2">${tHadits} Hdts</td><td class="border border-slate-900 p-2">${komponenNilai.hadits}</td><td class="border border-slate-900 p-2 text-left italic">${mapKeterangan[komponenNilai.hadits]}</td></tr>
+                <tr><td class="border border-slate-900 p-2 text-left uppercase">Murajaah Al-Quran</td><td class="border border-slate-900 p-2">-</td><td class="border border-slate-900 p-2">${komponenNilai.murajaah}</td><td class="border border-slate-900 p-2 text-left italic">${mapKeterangan[komponenNilai.murajaah]}</td></tr>
+                <tr><td class="border border-slate-900 p-2 text-left uppercase">Tahsin</td><td class="border border-slate-900 p-2">-</td><td class="border border-slate-900 p-2">${komponenNilai.tahsin}</td><td class="border border-slate-900 p-2 text-left italic">${mapKeterangan[komponenNilai.tahsin]}</td></tr>
+                <tr><td class="border border-slate-900 p-2 text-left uppercase">Tasmi'</td><td class="border border-slate-900 p-2">-</td><td class="border border-slate-900 p-2">${komponenNilai.tasmi}</td><td class="border border-slate-900 p-2 text-left italic">${mapKeterangan[komponenNilai.tasmi]}</td></tr>
+                <tr><td class="border border-slate-900 p-2 text-left uppercase">Mutaba'ah Yaumiyah</td><td class="border border-slate-900 p-2">-</td><td class="border border-slate-900 p-2">${komponenNilai.mutabaah}</td><td class="border border-slate-900 p-2 text-left italic">${mapKeterangan[komponenNilai.mutabaah]}</td></tr>
                 <tr class="bg-slate-100 font-black"><td colspan="2" class="border border-slate-900 p-3 text-right uppercase text-[9px]">Rata-Rata Nilai</td><td class="border border-slate-900 p-3 text-emerald-600">${rataH}</td><td class="border border-slate-900 p-3 text-left italic text-emerald-600">${mapKeterangan[rataH]} (${rataA.toFixed(2)})</td></tr>
             `;
 
